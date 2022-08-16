@@ -1,0 +1,27 @@
+<%- include('header') -%>
+
+<div class="Home compose">
+    <h3 >COMPOSE</h3>
+</div>
+
+<form class="Home" action="/compose" method="post" >
+    
+    <div class="form-group">
+    <label >Title</label>
+    <input type="text" class="titlee form-controls"  name = "title">
+    </div>
+
+    <div class="form-group">
+    <label>Post</label>
+    <textarea  name="pos"  ></textarea>
+    </div>
+
+    <button class="btn btn-primary" type="submit"> Publish</button>
+</form>
+
+
+
+
+
+
+<%- include('footer') -%>
