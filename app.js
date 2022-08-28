@@ -2,10 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const _ = require('lodash');
-var bt = [];
-var bs = [];
+const mongoose = require('mongoose');
 
+mongoose.connect("mongodb://localhost:27017/BlogSite");
 
+let postSchema =mongoose.Schema({
+    name: String,
+    post: String
+});
+
+const Post = mongoose.model("post", postSchema);
 
 
 
@@ -23,24 +29,39 @@ app.listen(3000, ()=>{
 
 app.get("/", (req, res) =>{
 
-    res.render("home", {BG:bs, BT: bt });
+    Post.find((err, doc)=>{
+        if(!err){
+
+            res.render("home", {BG:doc, BT: doc });
+        }
+        else{
+            console.log(err);
+        }
+    })
+
 });
 
 app.post("/compose",(req, res) =>{
    
-    bt.push(req.body.title);
-    bs.push(req.body.pos);
+    // bt.push(req.body.title);
+    // bs.push(req.body.pos);
+
+    var x =_.capitalize( req.body.title);
+    let post = new Post({
+        name: x,
+        post: req.body.pos
+
+    });
+
+    post.save();
     res.redirect("/");
    
 });
-
 app.get("/compose",(req, res)=>{
 
     res.render("compose");
 
 });
-
-
 app.get("/contact", (req, res)=>{
     res.render("contact");
 })
@@ -48,35 +69,20 @@ app.get("/about", (req, res)=>{
     res.render("about");
 })
 
-app.get("/:anything", (req, res)=>
+app.get("/post/:postId", (req, res)=>
 {
-    var x = _.lowerCase(req.params.anything);
-    let i = -1;
-   
+    var x = req.params.postId;
     
-    
-    
-    for(var j = 0; j < bt.length; j++)
-    {
-         
-        let y = _.lowerCase(bt[j]);
+    console.log("The input Value: " +x+" : ");
 
+    Post.findOne({_id: x},(err, content)=>{
+        if(!err){
+           
+            res.render("post", {title: content.name, body: content.post});
 
-        if(y === x)
-        {
- 
-            i = j;
-            break;
         }
-    }
-   
-
-
-    if(i >= 0){
-        
-        res.render("post",{title: bt[i], body: bs[i]});
-    }
-    else{
-        res.send("<h1>PAGE NOT FOUND 404 </h1>");
-    }
+        else{
+            console.log(err);
+        }
+    });
 });
